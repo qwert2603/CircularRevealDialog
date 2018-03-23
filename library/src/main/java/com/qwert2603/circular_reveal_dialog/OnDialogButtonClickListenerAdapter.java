@@ -3,7 +3,7 @@ package com.qwert2603.circular_reveal_dialog;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
-public abstract class OnDialogButtonClickListenerAdapter implements OnDialogButtonClickListener {
+public class OnDialogButtonClickListenerAdapter implements OnDialogButtonClickListener {
     @Nullable
     @Override
     public Intent onPositive() {
