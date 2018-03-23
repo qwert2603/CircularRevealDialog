@@ -65,7 +65,7 @@ public final class CircularRevealDialog {
                         final View decorView = window.getDecorView();
                         Utils.onPreDraw(decorView, new Utils.PreDrawAction() {
                             @Override
-                            public boolean execute(View view) {
+                            public boolean execute(@NonNull View view) {
                                 if (arguments.getBoolean(KEY_START_ANIMATION_SHOWN) || startX == null || startY == null) {
                                     return true;
                                 }

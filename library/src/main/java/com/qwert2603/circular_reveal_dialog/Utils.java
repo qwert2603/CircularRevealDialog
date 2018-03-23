@@ -1,14 +1,15 @@
 package com.qwert2603.circular_reveal_dialog;
 
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 final class Utils {
     interface PreDrawAction {
-        boolean execute(View view);
+        boolean execute(@NonNull View view);
     }
 
-    static void onPreDraw(final View view, final PreDrawAction action) {
+    static void onPreDraw(@NonNull final View view, @NonNull final PreDrawAction action) {
         view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
