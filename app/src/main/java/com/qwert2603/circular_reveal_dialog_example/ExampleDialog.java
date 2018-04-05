@@ -32,7 +32,7 @@ public class ExampleDialog extends DialogFragment {
                 Toast.makeText(requireContext(), "ok clicked", Toast.LENGTH_SHORT).show();
                 return null;
             }
-        }, getArguments().getInt(MainFragment.START_X_KEY), getArguments().getInt(MainFragment.START_Y_KEY), 500);
+        }, getArguments().getInt(MainFragment.START_X_KEY), getArguments().getInt(MainFragment.START_Y_KEY), 350);
         return alertDialog;
     }
 }

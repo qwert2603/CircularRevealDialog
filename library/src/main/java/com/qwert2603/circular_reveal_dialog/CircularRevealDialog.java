@@ -3,6 +3,7 @@ package com.qwert2603.circular_reveal_dialog;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.Lifecycle;
@@ -10,6 +11,7 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +26,7 @@ import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
 
+@SuppressWarnings("WeakerAccess")
 public final class CircularRevealDialog {
 
     public static final String KEY_CENTER_X = "KEY_CENTER_X";
@@ -61,31 +64,31 @@ public final class CircularRevealDialog {
                     @OnLifecycleEvent(Lifecycle.Event.ON_START)
                     void onStart() {
                         final Window window = alertDialog.getWindow();
-                        if (window == null) return;
-                        final View decorView = window.getDecorView();
-                        Utils.onPreDraw(decorView, new Utils.PreDrawAction() {
-                            @Override
-                            public boolean execute(@NonNull View view) {
-                                if (arguments.getBoolean(KEY_START_ANIMATION_SHOWN) || startX == null || startY == null) {
-                                    return true;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && window != null) {
+                            final View decorView = window.getDecorView();
+                            Utils.onPreDraw(decorView, new Utils.PreDrawAction() {
+                                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                                @Override
+                                public boolean execute(@NonNull View view) {
+                                    if (arguments.getBoolean(KEY_START_ANIMATION_SHOWN) || startX == null || startY == null) {
+                                        return true;
+                                    }
+                                    int[] locationOnScreen = new int[2];
+                                    decorView.getLocationOnScreen(locationOnScreen);
+                                    int centerX = startX - locationOnScreen[0];
+                                    int centerY = startY - locationOnScreen[1];
+                                    arguments.putInt(KEY_CENTER_X, centerX);
+                                    arguments.putInt(KEY_CENTER_Y, centerY);
+                                    final float endRadius = (float) Math.hypot(decorView.getWidth(), decorView.getHeight());
+                                    arguments.putBoolean(KEY_START_ANIMATION_SHOWN, true);
+                                    final Animator animator = ViewAnimationUtils.createCircularReveal(decorView, centerX, centerY, minRadius, endRadius);
+                                    animator.setDuration(duration);
+                                    animator.setInterpolator(new AccelerateInterpolator());
+                                    animator.start();
+                                    return false;
                                 }
-                                int[] locationOnScreen = new int[2];
-                                decorView.getLocationOnScreen(locationOnScreen);
-                                int centerX = startX - locationOnScreen[0];
-                                int centerY = startY - locationOnScreen[1];
-                                arguments.putInt(KEY_CENTER_X, centerX);
-                                arguments.putInt(KEY_CENTER_Y, centerY);
-                                final float endRadius = (float) Math.hypot(decorView.getWidth(), decorView.getHeight());
-                                arguments.putBoolean(KEY_START_ANIMATION_SHOWN, true);
-                                decorView.setVisibility(View.GONE);
-                                decorView.setVisibility(View.VISIBLE);
-                                final Animator animator = ViewAnimationUtils.createCircularReveal(decorView, centerX, centerY, minRadius, endRadius);
-                                animator.setDuration(duration);
-                                animator.setInterpolator(new AccelerateInterpolator());
-                                animator.start();
-                                return false;
-                            }
-                        });
+                            });
+                        }
                     }
 
                     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -102,36 +105,39 @@ public final class CircularRevealDialog {
                 }
 
                 final Window window = alertDialog.getWindow();
-                if (window == null) return;
-                final View decorView = window.getDecorView();
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(null);
-                alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(null);
-                alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(null);
-                decorView.setOnTouchListener(new View.OnTouchListener() {
-                    @SuppressLint("ClickableViewAccessibility")
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return true;
-                    }
-                });
-                int startX = arguments.getBoolean(KEY_WAS_DESTROYED) ? decorView.getWidth() / 2 : arguments.getInt(KEY_CENTER_X);
-                int startY = arguments.getBoolean(KEY_WAS_DESTROYED) ? decorView.getHeight() / 2 : arguments.getInt(KEY_CENTER_Y);
-                float startRadius = (float) Math.hypot(decorView.getWidth(), decorView.getHeight());
-                decorView.animate()
-                        .setStartDelay(duration * 5 / 8)
-                        .setDuration(duration * 3 / 8)
-                        .alpha(0f);
-                final Animator animator = ViewAnimationUtils.createCircularReveal(decorView, startX, startY, startRadius, minRadius);
-                animator.setDuration(duration);
-                animator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (dialogFragment.getFragmentManager() != null) {
-                            dialogFragment.dismissAllowingStateLoss();
+                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP || window == null) {
+                    dialogFragment.dismissAllowingStateLoss();
+                } else {
+                    final View decorView = window.getDecorView();
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(null);
+                    alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(null);
+                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(null);
+                    decorView.setOnTouchListener(new View.OnTouchListener() {
+                        @SuppressLint("ClickableViewAccessibility")
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            return true;
                         }
-                    }
-                });
-                animator.start();
+                    });
+                    int startX = arguments.getBoolean(KEY_WAS_DESTROYED) ? decorView.getWidth() / 2 : arguments.getInt(KEY_CENTER_X);
+                    int startY = arguments.getBoolean(KEY_WAS_DESTROYED) ? decorView.getHeight() / 2 : arguments.getInt(KEY_CENTER_Y);
+                    float startRadius = (float) Math.hypot(decorView.getWidth(), decorView.getHeight());
+                    decorView.animate()
+                            .setStartDelay(duration * 5 / 8)
+                            .setDuration(duration * 3 / 8)
+                            .alpha(0f);
+                    final Animator animator = ViewAnimationUtils.createCircularReveal(decorView, startX, startY, startRadius, minRadius);
+                    animator.setDuration(duration);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (dialogFragment.getFragmentManager() != null) {
+                                dialogFragment.dismissAllowingStateLoss();
+                            }
+                        }
+                    });
+                    animator.start();
+                }
             }
         }
 
