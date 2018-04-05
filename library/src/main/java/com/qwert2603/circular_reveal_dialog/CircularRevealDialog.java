@@ -33,6 +33,7 @@ public final class CircularRevealDialog {
     public static final String KEY_CENTER_Y = "KEY_CENTER_Y";
     public static final String KEY_START_ANIMATION_SHOWN = "KEY_START_ANIMATION_SHOWN";
     public static final String KEY_WAS_DESTROYED = "KEY_WAS_DESTROYED";
+    public static final String KEY_EXIT_ANIMATION_STARTED = "KEY_EXIT_ANIMATION_STARTED";
 
     @NonNull
     public static ResultListener initDialogForCircularReveal(
@@ -63,6 +64,7 @@ public final class CircularRevealDialog {
                 dialogFragment.getLifecycle().addObserver(new LifecycleObserver() {
                     @OnLifecycleEvent(Lifecycle.Event.ON_START)
                     void onStart() {
+                        if (arguments.getBoolean(KEY_EXIT_ANIMATION_STARTED, false)) dialogFragment.dismissAllowingStateLoss();
                         final Window window = alertDialog.getWindow();
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && window != null) {
                             final View decorView = window.getDecorView();
@@ -99,6 +101,7 @@ public final class CircularRevealDialog {
             }
 
             void runExitAnimation(@Nullable Intent data) {
+                if (arguments.getBoolean(KEY_EXIT_ANIMATION_STARTED, false)) return;
                 final Fragment targetFragment = dialogFragment.getTargetFragment();
                 if (targetFragment != null) {
                     targetFragment.onActivityResult(dialogFragment.getTargetRequestCode(), Activity.RESULT_OK, data);
@@ -108,6 +111,7 @@ public final class CircularRevealDialog {
                 if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP || window == null) {
                     dialogFragment.dismissAllowingStateLoss();
                 } else {
+                    arguments.putBoolean(KEY_EXIT_ANIMATION_STARTED, true);
                     final View decorView = window.getDecorView();
                     alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(null);
                     alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(null);
