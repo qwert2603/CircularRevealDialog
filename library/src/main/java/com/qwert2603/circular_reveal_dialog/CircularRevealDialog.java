@@ -35,6 +35,10 @@ public final class CircularRevealDialog {
     public static final String KEY_WAS_DESTROYED = "KEY_WAS_DESTROYED";
     public static final String KEY_EXIT_ANIMATION_STARTED = "KEY_EXIT_ANIMATION_STARTED";
 
+    /**
+     * @param buttonClickListener callback for consuming dialog's buttons click events.
+     * @return {@link ResultListener} for sending result to target fragment (not from dialog's buttons clicks).
+     */
     @NonNull
     public static ResultListener initDialogForCircularReveal(
             @NonNull final DialogFragment dialogFragment,
