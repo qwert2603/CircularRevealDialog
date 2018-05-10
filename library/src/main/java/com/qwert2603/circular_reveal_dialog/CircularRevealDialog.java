@@ -70,7 +70,7 @@ public final class CircularRevealDialog {
                     void onStart() {
                         if (arguments.getBoolean(KEY_EXIT_ANIMATION_STARTED, false)) dialogFragment.dismissAllowingStateLoss();
                         final Window window = alertDialog.getWindow();
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && window != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
                             final View decorView = window.getDecorView();
                             Utils.onPreDraw(decorView, new Utils.PreDrawAction() {
                                 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -112,7 +112,7 @@ public final class CircularRevealDialog {
                 }
 
                 final Window window = alertDialog.getWindow();
-                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP || window == null) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || window == null) {
                     dialogFragment.dismissAllowingStateLoss();
                 } else {
                     arguments.putBoolean(KEY_EXIT_ANIMATION_STARTED, true);
