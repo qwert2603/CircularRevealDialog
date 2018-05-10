@@ -1,24 +1,23 @@
 package com.qwert2603.circular_reveal_dialog;
 
-import android.content.Intent;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 public class OnDialogButtonClickListenerAdapter implements OnDialogButtonClickListener {
-    @Nullable
+    @NonNull
     @Override
-    public Intent onPositive() {
-        return null;
+    public DialogButtonClickConsumeResult onPositive() {
+        return DialogButtonClickConsumeResult.DEFAULT;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public Intent onNeutral() {
-        return null;
+    public DialogButtonClickConsumeResult onNeutral() {
+        return DialogButtonClickConsumeResult.DEFAULT;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public Intent onNegative() {
-        return null;
+    public DialogButtonClickConsumeResult onNegative() {
+        return DialogButtonClickConsumeResult.DEFAULT;
     }
 }

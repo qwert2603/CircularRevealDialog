@@ -74,7 +74,7 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("AASSDD", "onActivityResult " + requestCode + " " + resultCode + " " + data);
-        if (data != null) Log.d("AASSDD", "onActivityResult data" + data);
+        if (data != null) Log.d("AASSDD", "onActivityResult data" + data.getExtras());
     }
 
     private Bundle createArguments() {

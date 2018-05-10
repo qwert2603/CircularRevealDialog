@@ -5,11 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.qwert2603.circular_reveal_dialog.CircularRevealDialog;
+import com.qwert2603.circular_reveal_dialog.DialogButtonClickConsumeResult;
 import com.qwert2603.circular_reveal_dialog.OnDialogButtonClickListenerAdapter;
 import com.qwert2603.circular_reveal_dialog.ResultListener;
 
@@ -23,7 +23,7 @@ public class SelectDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
                 .setTitle("SelectDialog")
-                .setSingleChoiceItems(new String[]{"one", "two", "three", "four", "five", "six"}, 2, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(new String[]{"zero", "one", "two", "three", "four", "five", "six"}, 2, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         resultListener.onResult(new Intent().putExtra("selected_index", which));
@@ -31,12 +31,20 @@ public class SelectDialog extends DialogFragment {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .setNeutralButton("42", null)
+                .setPositiveButton("positive", null)
                 .create();
         resultListener = CircularRevealDialog.initDialogForCircularReveal(this, alertDialog, new OnDialogButtonClickListenerAdapter() {
-            @Nullable
+            @NonNull
             @Override
-            public Intent onNeutral() {
-                return new Intent().putExtra("selected_index", 42);
+            public DialogButtonClickConsumeResult onNeutral() {
+                return new DialogButtonClickConsumeResult(false, null);
+            }
+
+            @NonNull
+            @Override
+            public DialogButtonClickConsumeResult onPositive() {
+                final Intent intent = new Intent().putExtra("selected_index", 26);
+                return new DialogButtonClickConsumeResult(true, intent);
             }
         }, getArguments().getInt(MainFragment.START_X_KEY), getArguments().getInt(MainFragment.START_Y_KEY), 500);
         return alertDialog;

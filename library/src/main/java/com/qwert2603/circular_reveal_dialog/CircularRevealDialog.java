@@ -167,19 +167,22 @@ public final class CircularRevealDialog {
                 alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        helper.runExitAnimation(buttonClickListener.onPositive());
+                        final DialogButtonClickConsumeResult result = buttonClickListener.onPositive();
+                        if (result.isExit) helper.runExitAnimation(result.result);
                     }
                 });
                 alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        helper.runExitAnimation(buttonClickListener.onNeutral());
+                        final DialogButtonClickConsumeResult result = buttonClickListener.onNeutral();
+                        if (result.isExit) helper.runExitAnimation(result.result);
                     }
                 });
                 alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        helper.runExitAnimation(buttonClickListener.onNegative());
+                        final DialogButtonClickConsumeResult result = buttonClickListener.onNegative();
+                        if (result.isExit) helper.runExitAnimation(result.result);
                     }
                 });
             }
