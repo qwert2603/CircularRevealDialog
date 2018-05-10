@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Dialog;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
@@ -17,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -42,12 +42,14 @@ public final class CircularRevealDialog {
     @NonNull
     public static ResultListener initDialogForCircularReveal(
             @NonNull final DialogFragment dialogFragment,
-            @NonNull final AlertDialog alertDialog,
+            @NonNull final Dialog dialog,
             @NonNull final OnDialogButtonClickListener buttonClickListener,
             @Nullable final Integer startX,
             @Nullable final Integer startY,
             final long duration
     ) {
+        final DialogButtonsGetter dialogButtonsGetter = new DialogButtonsGetter(dialog);
+
         final class Helper {
             private final float minRadius;
             @NonNull
@@ -69,7 +71,7 @@ public final class CircularRevealDialog {
                     @OnLifecycleEvent(Lifecycle.Event.ON_START)
                     void onStart() {
                         if (arguments.getBoolean(KEY_EXIT_ANIMATION_STARTED, false)) dialogFragment.dismissAllowingStateLoss();
-                        final Window window = alertDialog.getWindow();
+                        final Window window = dialog.getWindow();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
                             final View decorView = window.getDecorView();
                             Utils.onPreDraw(decorView, new Utils.PreDrawAction() {
@@ -111,15 +113,15 @@ public final class CircularRevealDialog {
                     targetFragment.onActivityResult(dialogFragment.getTargetRequestCode(), Activity.RESULT_OK, data);
                 }
 
-                final Window window = alertDialog.getWindow();
+                final Window window = dialog.getWindow();
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || window == null) {
                     dialogFragment.dismissAllowingStateLoss();
                 } else {
                     arguments.putBoolean(KEY_EXIT_ANIMATION_STARTED, true);
                     final View decorView = window.getDecorView();
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(null);
-                    alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(null);
-                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(null);
+                    dialogButtonsGetter.getDialogButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(null);
+                    dialogButtonsGetter.getDialogButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(null);
+                    dialogButtonsGetter.getDialogButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(null);
                     decorView.setOnTouchListener(new View.OnTouchListener() {
                         @SuppressLint("ClickableViewAccessibility")
                         @Override
@@ -150,8 +152,8 @@ public final class CircularRevealDialog {
         }
 
         final Helper helper = new Helper();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
@@ -161,24 +163,24 @@ public final class CircularRevealDialog {
                 return false;
             }
         });
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                dialogButtonsGetter.getDialogButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final DialogButtonClickConsumeResult result = buttonClickListener.onPositive();
                         if (result.isExit) helper.runExitAnimation(result.result);
                     }
                 });
-                alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
+                dialogButtonsGetter.getDialogButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final DialogButtonClickConsumeResult result = buttonClickListener.onNeutral();
                         if (result.isExit) helper.runExitAnimation(result.result);
                     }
                 });
-                alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+                dialogButtonsGetter.getDialogButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final DialogButtonClickConsumeResult result = buttonClickListener.onNegative();
@@ -189,8 +191,8 @@ public final class CircularRevealDialog {
         });
         return new ResultListener(new Function<Intent, Void>() {
             @Override
-            public Void apply(Intent input) {
-                helper.runExitAnimation(input);
+            public Void apply(Intent result) {
+                helper.runExitAnimation(result);
                 return null;
             }
         });

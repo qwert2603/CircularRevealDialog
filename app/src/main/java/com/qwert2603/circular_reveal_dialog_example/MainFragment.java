@@ -40,6 +40,15 @@ public class MainFragment extends Fragment {
                 return false;
             }
         });
+        view.findViewById(R.id.showTimeDialog_TextView).setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                lastTouchX = (int) event.getRawX();
+                lastTouchY = (int) event.getRawY();
+                return false;
+            }
+        });
         view.findViewById(R.id.showSelectDialog_TextView).setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
@@ -56,6 +65,15 @@ public class MainFragment extends Fragment {
                 final ExampleDialog exampleDialog = new ExampleDialog();
                 exampleDialog.setArguments(createArguments());
                 exampleDialog.setTargetFragment(MainFragment.this, 2);
+                exampleDialog.show(getFragmentManager(), "ExampleDialog");
+            }
+        });
+        view.findViewById(R.id.showTimeDialog_TextView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TestTimeDialogFragment exampleDialog = new TestTimeDialogFragment();
+                exampleDialog.setArguments(createArguments());
+                exampleDialog.setTargetFragment(MainFragment.this, 3);
                 exampleDialog.show(getFragmentManager(), "ExampleDialog");
             }
         });
