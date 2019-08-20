@@ -1,6 +1,6 @@
 package com.qwert2603.circular_reveal_dialog;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Callbacks for dialog's button.

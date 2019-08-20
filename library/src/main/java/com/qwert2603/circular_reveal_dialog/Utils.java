@@ -1,6 +1,6 @@
 package com.qwert2603.circular_reveal_dialog;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.ViewTreeObserver;
 

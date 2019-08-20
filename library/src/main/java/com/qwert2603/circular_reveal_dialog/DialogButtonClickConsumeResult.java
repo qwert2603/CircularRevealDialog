@@ -1,7 +1,7 @@
 package com.qwert2603.circular_reveal_dialog;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 final public class DialogButtonClickConsumeResult {
 
